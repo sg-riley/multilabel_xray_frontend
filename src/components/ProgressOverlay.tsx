@@ -105,7 +105,6 @@ interface ProgressOverlayProps {
 }
 
 export default function ProgressOverlay({ visible }: ProgressOverlayProps) {
-  const [currentStage, setCurrentStage] = useState(0);
   const [stageStatuses, setStageStatuses] = useState<StageStatus[]>(
     STAGES.map(() => "pending")
   );
@@ -113,20 +112,21 @@ export default function ProgressOverlay({ visible }: ProgressOverlayProps) {
 
   useEffect(() => {
     if (!visible) {
-      setCurrentStage(0);
-      setStageStatuses(STAGES.map(() => "pending"));
-      setOverallProgress(0);
       return;
     }
 
-    let stageIdx = 0;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setStageStatuses(STAGES.map(() => "pending"));
+    setOverallProgress(0);
+    /* eslint-enable react-hooks/set-state-in-effect */
+
+    const stageIdx = 0;
     let elapsed = 0;
     const totalDuration = STAGES.reduce((a, s) => a + s.durationMs, 0);
 
     const runStage = (idx: number) => {
       if (idx >= STAGES.length) return;
 
-      setCurrentStage(idx);
       setStageStatuses((prev) => {
         const next = [...prev];
         next[idx] = "active";
@@ -150,7 +150,6 @@ export default function ProgressOverlay({ visible }: ProgressOverlayProps) {
     // Small delay to show the overlay first
     const initTimer = setTimeout(() => runStage(stageIdx), 400);
     return () => clearTimeout(initTimer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   if (!visible) return null;

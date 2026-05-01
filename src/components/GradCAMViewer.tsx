@@ -20,10 +20,10 @@ export default function GradCAMViewer({ gradcamImages }: GradCAMViewerProps) {
   if (detectedLabels.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-card overflow-hidden">
+    <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg overflow-hidden">
       {/* Header */}
-      <div className="px-5 pt-5 pb-4 border-b border-slate-100">
-        <h3 className="text-sm font-700 text-slate-700 flex items-center gap-2 mb-1">
+      <div className="px-5 pt-5 pb-4 border-b border-white/10">
+        <h3 className="text-sm font-700 text-white flex items-center gap-2 mb-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -32,7 +32,7 @@ export default function GradCAMViewer({ gradcamImages }: GradCAMViewerProps) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="w-4 h-4 text-orange-500"
+            className="w-4 h-4 text-orange-400"
           >
             <circle cx="12" cy="12" r="3" />
             <path d="M3 7V5a2 2 0 0 1 2-2h2" />
@@ -56,8 +56,8 @@ export default function GradCAMViewer({ gradcamImages }: GradCAMViewerProps) {
                 onClick={() => setActiveLabel(label)}
                 className={`px-3 py-1 rounded-full text-xs font-600 transition-all duration-200 ${
                   activeLabel === label
-                    ? "bg-orange-100 text-orange-700 border border-orange-300"
-                    : "bg-slate-100 text-slate-500 hover:bg-slate-200 border border-transparent"
+                    ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
+                    : "bg-white/10 text-slate-300 hover:bg-white/20 border border-transparent"
                 }`}
               >
                 {formatLabel(label)}
@@ -68,7 +68,7 @@ export default function GradCAMViewer({ gradcamImages }: GradCAMViewerProps) {
       </div>
 
       {/* GradCAM Image */}
-      <div className="relative bg-slate-950 aspect-square overflow-hidden">
+      <div className="relative bg-black/40 aspect-square overflow-hidden">
         {gradcamImages[activeLabel] && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -81,15 +81,15 @@ export default function GradCAMViewer({ gradcamImages }: GradCAMViewerProps) {
 
         {/* Label badge overlay */}
         <div className="absolute top-3 left-3">
-          <span className="px-2.5 py-1 bg-slate-900/80 backdrop-blur-sm text-white text-xs font-600 rounded-lg">
+          <span className="px-2.5 py-1 bg-black/50 backdrop-blur-md border border-white/10 text-white text-xs font-600 rounded-lg">
             {formatLabel(activeLabel)}
           </span>
         </div>
       </div>
 
       {/* Legend */}
-      <div className="px-5 py-4 bg-slate-50 border-t border-slate-100">
-        <p className="text-xs font-600 text-slate-600 mb-2">Legenda Warna</p>
+      <div className="px-5 py-4 bg-white/5 border-t border-white/10">
+        <p className="text-xs font-600 text-slate-300 mb-2">Legenda Warna</p>
         <div className="flex items-center gap-2">
           <div className="flex-1 h-3 rounded-full bg-gradient-to-r from-blue-600 via-cyan-400 via-yellow-400 to-red-500" />
         </div>
