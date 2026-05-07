@@ -66,7 +66,7 @@ const STAGES: Stage[] = [
     ),
     durationMs: 2000,
   },
-  {
+/* {
     key: "gradcam",
     label: "GradCAM",
     description: "Membuat peta aktivasi untuk visualisasi...",
@@ -80,7 +80,7 @@ const STAGES: Stage[] = [
       </svg>
     ),
     durationMs: 1800,
-  },
+  }, */
   {
     key: "report",
     label: "Pembuatan Laporan",

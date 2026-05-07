@@ -149,9 +149,9 @@ export default function ResultsPage() {
             />
 
             {/* 2. GradCAM Viewer (hanya jika ada) */}
-            {hasGradCam && (
+            {/* {hasGradCam && (
               <GradCAMViewer gradcamImages={result.gradcam_images} />
-            )}
+            )} */}
           </div>
 
           {/* ===== RIGHT COLUMN ===== */}

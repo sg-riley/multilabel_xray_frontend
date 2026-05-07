@@ -20,7 +20,7 @@ const STEP_LABELS: { key: keyof PipelineSteps; label: string; color: string }[] 
   { key: "deep_feature_ms", label: "Deep Features", color: "bg-purple-400" },
   { key: "fusion_ms", label: "Feature Fusion", color: "bg-indigo-400" },
   { key: "classify_ms", label: "Klasifikasi", color: "bg-emerald-400" },
-  { key: "gradcam_ms", label: "GradCAM", color: "bg-orange-400" },
+// { key: "gradcam_ms", label: "GradCAM", color: "bg-orange-400" },
   { key: "report_ms", label: "Pembuatan Laporan", color: "bg-pink-400" },
 ];
 
