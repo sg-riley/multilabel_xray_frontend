@@ -9,7 +9,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import UploadZone from "@/components/UploadZone";
 import ProgressOverlay from "@/components/ProgressOverlay";
-import { analyzeImage } from "@/lib/api";
+import { analyzeImage, getPreview } from "@/lib/api";
 
 export default function HomePage() {
   const router = useRouter();
@@ -18,11 +18,28 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  const handleFileSelect = useCallback((file: File) => {
+  const handleFileSelect = useCallback(async (file: File) => {
     setSelectedFile(file);
-    const reader = new FileReader();
-    reader.onload = (e) => setPreview(e.target?.result as string);
-    reader.readAsDataURL(file);
+    setPreview(null); // Reset preview while loading
+
+    const isDicom =
+      file.name.toLowerCase().endsWith(".dcm") ||
+      file.name.toLowerCase().endsWith(".dicom") ||
+      file.type.includes("dicom");
+
+    if (isDicom) {
+      try {
+        const { preview: b64 } = await getPreview(file);
+        setPreview(b64);
+      } catch (err) {
+        console.error("Failed to get DICOM preview", err);
+        // Fallback: preview tetap null, UploadZone akan menampilkan icon DICOM
+      }
+    } else {
+      const reader = new FileReader();
+      reader.onload = (e) => setPreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
   }, []);
 
   const showToast = (msg: string) => {
@@ -125,7 +142,7 @@ export default function HomePage() {
                 Upload X-Ray
               </h2>
               <p className="text-slate-300">
-                Format PNG atau JPEG (maks. 10MB)
+                Format PNG, JPEG, atau DICOM (maks. 10MB)
               </p>
             </div>
 

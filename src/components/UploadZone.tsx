@@ -16,7 +16,8 @@ interface UploadZoneProps {
 }
 
 const MAX_SIZE_MB = 10;
-const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/jpg"];
+const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/jpg", "application/dicom", "application/x-dicom"];
+const DICOM_EXTENSIONS = [".dcm", ".dicom"];
 
 export default function UploadZone({
   onFileSelect,
@@ -32,8 +33,10 @@ export default function UploadZone({
   const validateAndSelect = useCallback(
     (file: File) => {
       setError(null);
-      if (!ACCEPTED_TYPES.includes(file.type)) {
-        setError("Format file tidak didukung. Gunakan PNG atau JPEG/JPG.");
+      const isDicomByExt = DICOM_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
+      
+      if (!ACCEPTED_TYPES.includes(file.type) && !isDicomByExt) {
+        setError("Format file tidak didukung. Gunakan PNG, JPEG, atau DICOM.");
         return;
       }
       if (file.size > MAX_SIZE_MB * 1024 * 1024) {
@@ -94,24 +97,50 @@ export default function UploadZone({
         <input
           ref={inputRef}
           type="file"
-          accept="image/png,image/jpeg,image/jpg"
+          accept="image/png,image/jpeg,image/jpg,.dcm,.dicom,application/dicom"
           className="hidden"
           onChange={handleInputChange}
           id="file-input"
         />
 
-        {preview && selectedFile ? (
-          /* Preview Mode */
+        {selectedFile ? (
+          /* File Selected Mode (Preview or Loading) */
           <div className="p-6 animate-fade-in">
             <div className="flex flex-col sm:flex-row gap-6 items-center">
-              {/* Image Preview */}
-              <div className="relative w-48 h-48 rounded-xl overflow-hidden bg-slate-900 shadow-lg shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={preview}
-                  alt="Preview X-ray"
-                  className="w-full h-full object-contain"
-                />
+              {/* Image Preview / Loading / Icon */}
+              <div className="relative w-48 h-48 rounded-xl overflow-hidden bg-slate-900 shadow-lg shrink-0 flex items-center justify-center">
+                {!preview ? (
+                  /* Loading / Placeholder State */
+                  <div className="flex flex-col items-center gap-3">
+                    {(DICOM_EXTENSIONS.some(ext => selectedFile.name.toLowerCase().endsWith(ext)) || selectedFile.type.includes("dicom")) ? (
+                      <div className="relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 text-sky-400/50">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                           <svg className="animate-spin w-6 h-6 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                           </svg>
+                        </div>
+                      </div>
+                    ) : (
+                      <svg className="animate-spin w-8 h-8 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                    )}
+                    <span className="text-xs text-slate-400 animate-pulse">Memuat preview...</span>
+                  </div>
+                ) : (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={preview}
+                    alt="Preview X-ray"
+                    className="w-full h-full object-contain"
+                  />
+                )}
                 <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-xl" />
               </div>
 
@@ -130,7 +159,7 @@ export default function UploadZone({
                 </p>
                 <p className="text-sm text-slate-300 mt-1">
                   {formatSize(selectedFile.size)} &bull;{" "}
-                  {selectedFile.type.split("/")[1].toUpperCase()}
+                  {selectedFile.type ? selectedFile.type.split("/")[1].toUpperCase() : selectedFile.name.split('.').pop()?.toUpperCase()}
                 </p>
 
                 <button
@@ -149,7 +178,7 @@ export default function UploadZone({
             </div>
           </div>
         ) : (
-          /* Empty State */
+          /* Empty State (Keep as is) */
           <div className="p-12 flex flex-col items-center gap-4 text-center">
             <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300 ${isDragging ? "bg-sky-500/20 scale-110" : "bg-white/5 border border-white/10"}`}>
               <svg
@@ -183,6 +212,7 @@ export default function UploadZone({
             <div className="flex items-center gap-3 text-xs text-slate-400 mt-2">
               <span className="px-2 py-1 bg-white/10 rounded-md font-500 text-slate-300">PNG</span>
               <span className="px-2 py-1 bg-white/10 rounded-md font-500 text-slate-300">JPEG</span>
+              <span className="px-2 py-1 bg-white/10 rounded-md font-500 text-slate-300">DICOM</span>
               <span className="text-slate-500">|</span>
               <span className="text-slate-300">Maksimum {MAX_SIZE_MB}MB</span>
             </div>

@@ -10,7 +10,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 /**
  * Kirim gambar X-ray untuk dianalisis
  * Request dikirim melalui Next.js API route (/api/analyze) untuk menghindari CORS
- * @param file - File gambar PNG/JPG
+ * @param file - File gambar PNG/JPG/DICOM
  */
 export async function analyzeImage(file: File): Promise<AnalyzeResponse> {
   const formData = new FormData();
@@ -45,4 +45,23 @@ export async function fetchLabels(): Promise<LabelsResponse> {
   const response = await fetch(`${BASE_URL}/api/labels`);
   if (!response.ok) throw new Error("Gagal mengambil daftar label");
   return response.json() as Promise<LabelsResponse>;
+}
+
+/**
+ * Ambil preview gambar (untuk DICOM yang tidak bisa di-render browser)
+ */
+export async function getPreview(file: File): Promise<{ preview: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch("/api/preview", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("Gagal mengambil preview gambar");
+  }
+
+  return response.json() as Promise<{ preview: string }>;
 }

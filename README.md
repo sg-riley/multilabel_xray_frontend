@@ -78,7 +78,7 @@ src/
 ### Halaman 1: Upload (`/`)
 
 - **Hero section** dengan deskripsi sistem, badge fitur, dan dekorasi gradien
-- **UploadZone**: drag-and-drop + click to browse, validasi PNG/JPEG maks 10MB, preview gambar
+- **UploadZone**: drag-and-drop + click to browse, validasi PNG/JPEG/DICOM maks 10MB, preview gambar (DICOM menggunakan icon placeholder)
 - **ProgressOverlay**: full-screen overlay dengan 6 tahapan animasi:
   `Preprocessing → Segmentasi → Ekstraksi Fitur → Klasifikasi → GradCAM → Pembuatan Laporan`
 - **Toast notification** saat terjadi error analisis
